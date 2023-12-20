@@ -5,6 +5,7 @@ dependencies:
   - python=3.11.4 # Specify Python version
   - ipykernel # Enable environment in Jupyter
   - pip # Install pip with other packages
+  - jupyterlab
   - pip:
     - numpy==1.26.1
     - matplotlib==3.7.1

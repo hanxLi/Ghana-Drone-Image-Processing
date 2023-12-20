@@ -729,3 +729,31 @@ def packing_data(usage_list, image_chips, lbl_chips, out_format, out_dir):
             pickle.dump(training_data_lbl, f)
         with open(Path(out_dir) / "label_chips/validation_data_lbl.pkl", "wb") as f:
             pickle.dump(validation_data_lbl, f)
+
+#####################################################################################
+
+def plot_img_lbl_pair(img_path, lbl_path, band_composite=None, stretch=None):
+    r""" Plots a loaded image and its corresponding label using matplotlib and rasterio.plot.
+
+    Arguments:
+    ----------
+    img_path (str) : Full path including filename of the image source we wish to load.
+    lbl_path (str) : Full path including filename of the label source we wish to load.
+    stretch (str) : A string specifying the contrast stretch to apply to the image (e.g. 'linear', 'sqrt', or 'log').
+    band_composite (tuple of int) : A tuple specifying the band indices to use for an RGB image (e.g. (3, 2, 1)).
+
+    Returns:
+    --------
+    None, plots image and label side by side using matplotlib and rasterio.plot
+    """
+    
+    # Using the plot_image_and_label function to plot the image and label
+
+    with rasterio.open(img_path) as src:
+        img = src.read()
+        img = np.moveaxis(img, 0, -1)
+    
+    with rasterio.open(lbl_path) as src:
+        lbl = src.read(1)
+
+    plot_image_and_label(img, lbl, band_composite, stretch)
