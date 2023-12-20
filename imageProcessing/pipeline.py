@@ -34,18 +34,11 @@ def create_msk_lbl_img(img_paths, labels, bbox, proj_dir, msk_out_dir, lbl_out_d
     lbl_list (list): list of paths to output labels
     msk_list (list): list of paths to output masks
     """
-    
-    
-    
-    # output resolution for images--you might want to change this
-    # original was 2.5e-07
-    # res = 10e-07 is used in this example.
-    # Warning: Using the res option might result in tiles with different sizes(nrows, ncols)
 
 
-    img_list = [] # list to catch output image paths
-    lbl_list = [] # list to catch output label paths
-    msk_list = [] # list to catch output mask paths
+    img_list = [] 
+    lbl_list = [] 
+    msk_list = [] 
 
     for img in tqdm.tqdm(img_paths):
         ortho_idx = os.path.basename(img)
@@ -198,15 +191,11 @@ def chipping(proj_dir, lbl_chip_dir, img_chip_dir, out_format='tif', chipping_ca
     img_chips_list = []
     lbl_chips_list = []
     for i, lrow in chipping_cat.iterrows():
-    # Need to remove .loc (only runs through 5 lines)
-        # print(f"Processing {lrow['labels']}")
-
         if lrow['labels'] == "None":
             print(f"..no labels in {lrow['images']}, continuing")
             continue
 
         else:
-            # print(f"..chipping {lrow['labels']}")
             # Read in mask, labels, image, normalize image, and get indexes for
             # centers of pixels meeting criteria for minimum coverage by positive
             # class
@@ -231,5 +220,6 @@ def chipping(proj_dir, lbl_chip_dir, img_chip_dir, out_format='tif', chipping_ca
     chips_catdf = pd.concat(chips_cat, ignore_index=True)
     chips_catdf.to_csv(Path(proj_dir) / "working" / "chips_catalog.csv")
 
+#####################################################################################
 
 

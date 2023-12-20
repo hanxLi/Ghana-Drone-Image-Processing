@@ -121,7 +121,7 @@ def rasterize_mask_labels(labels, mask, dst_meta=None, res=None,
     na (int) : Value to set NA areas to
     nrow (int) : Number of rows in output raster
     ncol (int) : Number of columns in output raster
-    binary_mask (binary) : If set to True, the mask is assumed to be binary
+    binary_mask (binary) : If set to True, the label mask will be binary
     prim_crop (list) : List of primary crops to be used in rasterizing labels
 
     Returns:
@@ -144,28 +144,28 @@ def rasterize_mask_labels(labels, mask, dst_meta=None, res=None,
     
 ########################    
 # All Binary Mask Method
-    
-    # clipped_labels = gpd.clip(labels.buffer(0), mask)
-    # geom = [shapes for shapes in clipped_labels.geometry]
+    if binary_mask:    
+        clipped_labels = gpd.clip(labels.buffer(0), mask)
+        geom = [shapes for shapes in clipped_labels.geometry]
     
 ########################
 # Crop Specific Mask Method
-    geom = []
+    elif not binary_mask:
+        geom = []
+        for i in range(len(labels)):
+            
+            temp_geom = gpd.clip(labels.loc[[i]].buffer(0), mask).reset_index()
 
-    for i in range(len(labels)):
-        
-        temp_geom = gpd.clip(labels.loc[[i]].buffer(0), mask).reset_index()
-
-        # print(temp_geom.geometry.empty)
-        if not temp_geom.geometry.empty:
-            if not binary_mask:
+            # print(temp_geom.geometry.empty)
+            if not temp_geom.geometry.empty:
                 if labels.loc[i].prim_crop in other_crops:
                     geom.append([temp_geom.geometry[0], 0])
                 else:
                     for j in range(len(prim_crop)):
                         if labels.loc[i].prim_crop == prim_crop[j]:
                             geom.append([temp_geom.geometry[0], j + 1])
-
+    else:
+        assert ValueError, "binary_mask must be a boolean"
             
     
 ########################

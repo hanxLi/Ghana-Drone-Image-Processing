@@ -1,13 +1,14 @@
+# Environment file for the image_processing conda environment
 name: image_processing
 channels:
   - defaults
 dependencies:
   - python=3.11.4 # Specify Python version
-  - ipykernel # Enable environment in Jupyter
-  - pip # Install pip with other packages
-  - jupyterlab
-  - pip:
-    - numpy==1.26.1
+  - ipykernel     # Enable environment in Jupyter
+  - pip           # Install pip with other packages
+  - jupyterlab    # Enable JupyterLab notebook support
+  - pip:          # Install packages with pip
+    - numpy==1.26.1 
     - matplotlib==3.7.1
     - pandas==1.5.3
     - rasterio==1.3.8

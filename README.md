@@ -21,7 +21,7 @@ This repository contains the image processing pipeline for the Ghana Drone Image
 - Make sure Conda or Miniconda is installed on your device
 - RUN ```conda env create -f environment.yml```
 - RUN ```jupyter lab -ip=0.0.0.0``` to launch jupyterlab
-- RUN the chipping notebook
+- RUN the chipping notebook form the beginning
 
 ## Features
 
