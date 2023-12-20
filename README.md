@@ -21,9 +21,17 @@ This repository contains the image processing pipeline for the Ghana Drone Image
 - Make sure Conda or Miniconda is installed on your device
 - RUN ```conda env create -f environment.yml```
 - RUN ```jupyter lab -ip=0.0.0.0``` to launch jupyterlab
+- RUN the preProcessing notebook from the beginning
 - RUN the chipping notebook form the beginning
 
 ## Features
+
+### Pre-Processing
+
+-  Converting the low readability naming format of the original data into new format with grid name of the tile as the identifying name
+-  Generate new catalog that replaces naming in the original catalog
+
+### Chipping
 
 -  User could define the primary crop type they wish to target. 
 -  Both binary classification chips and multi-class classification chips are available to generate
