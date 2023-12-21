@@ -12,8 +12,10 @@ This repository contains the image processing pipeline for the Ghana Drone Image
 - The bounding box and crop type labels are in geojson formats
 - There are a total of 182 drone image tiles
 - Each dron image tiles contain 3 channels as Red, Green and Blue. However there are tiles contians the alpha channel. In this pipeline the alpha channel is ignored when processing the chips
-- The primary crop types are Maize and Rice. Using one of these as the targeting crop or using both to perform multi-crop classification is recommended
+- The primary crop types are Maize and Fallow. Using one of these as the targeting crop or using both to perform multi-crop classification is recommended
 - The resulting image chips are 3 * 256 * 256 by default, with overlaps of 32 pixels
+- Here is the coverage distribution of the labels after cropped to the bounding box area:
+  - ![Example Chip 1](examples/class_dis.png)
 
 ## Environment Setup
 
@@ -50,7 +52,7 @@ Here is a example rasterized label tile:
 - Grey: Maize
 - Yellow: Rice
 
-![Example Chip 1](example/../examples/example_raster_lbl.png)
+![Example Chip 1](examples/example_raster_lbl.png)
 
 
 Here are some example resulting image and label pairs:
@@ -63,7 +65,7 @@ Here are some example resulting image and label pairs:
 
 ## Known Issue
 
-- Even though the labels have 9 classes but, as suggested in the data section, using Maize or Rice, the two dominating classes is recommended when forming classification chips
+- Even though the labels have 9 classes but, as suggested in the data section, using Maize or Fallow, the two dominating classes is recommended when forming classification chips
 - The accuracy of the labels is not 100% accuracy. To improve model performance, filter chips from different tile using the confidence level or labeler is recommended. Those information are available in the labels catalog provided
 - Providing specific resolution when rasterize the image and label tiles might result in raster tiles with different number of rows and number of columns. When testing this have minor or no influence on the resulting chips but specify the number of rows and number of columns is suggested
 
