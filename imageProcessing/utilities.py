@@ -163,7 +163,7 @@ def rasterize_mask_labels(labels, mask, dst_meta=None, res=None,
                 else:
                     for j in range(len(prim_crop)):
                         if labels.loc[i].prim_crop == prim_crop[j]:
-                            geom.append([temp_geom.geometry[0], j + 1])
+                            geom.append([temp_geom.geometry[0], 3])
     else:
         assert ValueError, "binary_mask must be a boolean"
             
@@ -296,6 +296,8 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
 
     mask, label = cropping_ref
 
+    max_lbl = label.max()
+
     half_size = patch_size // 2
     step_size = patch_size - 2 * overlap
 
@@ -327,17 +329,26 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
                             col - half_size: col + half_size]
             label_ref = label[row - half_size: row + half_size,
                               col - half_size: col + half_size]
-
+            # plt.imshow(mask_ref)
             if (usage == "train") and mask_ref.all():
+                print("Passed mask_ref check...")
                 if label_ref.any() != 0:
+                    print("Passed label_ref check...")
                     if binary_mask:
                         pond_ratio = np.sum(label_ref == 1) / label_ref.size
                     else:
-                        pond_ratio = np.sum(label_ref == 1) + np.sum(label_ref == 2) / label_ref.size
+                        sum_val = 0
+                        for i in range(1, max_lbl):
+                            if i in label_ref:
+                                sum_val += np.sum(label_ref == i)
+                        
+                        pond_ratio = sum_val / label_ref.size
+
                     if pond_ratio >= positive_class_threshold:
 
                         proportional_patch_index.append([row, col])
                 else:
+                    print("failed label_ref check...")
                     neg_patch_index.append([row, col])
                 
             if (usage == "validate") and (label_ref.any() != 0) and mask_ref.all():
@@ -352,9 +363,12 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
 
         # if num_negative_samples <= len(neg_patch_index):
         #     num_negative_samples = len(neg_patch_index)
-        neg_samples = random.sample(neg_patch_index, num_negative_samples)
-        # print(neg_samples)
-        proportional_patch_index.extend(neg_samples)
+
+        if num_negative_samples > 0 and len(neg_patch_index) > 0:
+            if num_negative_samples <= len(neg_patch_index):
+                neg_samples = random.sample(neg_patch_index, num_negative_samples)
+                # print(neg_samples)
+                proportional_patch_index.extend(neg_samples)
 
     # For test set use the indices generated from mask without considering the
     # class proportions.
@@ -363,6 +377,7 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
 
     if verbose:
         print("Number of negative patches:", len(neg_patch_index))
+        print("Number of negative samples:", num_negative_samples)
         print("Number of patches:", len(proportional_patch_index))
         print("Patched from:\n{}".format(proportional_patch_index))
 

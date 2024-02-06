@@ -199,10 +199,12 @@ def chipping(proj_dir, lbl_chip_dir, img_chip_dir, out_format='tif', chipping_ca
             # Read in mask, labels, image, normalize image, and get indexes for
             # centers of pixels meeting criteria for minimum coverage by positive
             # class
+            
             idx, meta, msk, lbl, img = label_mask_image_loader(
                 lrow, proj_dir, patch_size, overlap, positive_class_threshold,
                 verbose=False
             )
+            
 
             # Process labels and images into chips, written to disk as geotiffs
             cat, lbl_chips, img_chips = chipper(
