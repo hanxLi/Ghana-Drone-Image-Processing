@@ -57,24 +57,11 @@ def make_rst_template(ply, res=None, nrow=None, ncol=None, na=0,
     --------
     tuple: a raster numpy.ndarray and a meta dictionary.
     """
-    #commented out old debugging code, kept for future debugging.
-    # # convert ply to numpy array
-    # ply_arr = np.array(ply.geometry.apply(lambda geom: np.array(geom.exterior.coords)).values.tolist())
-
-    # # check for NaN values in ply_arr
-    # nan_count = np.count_nonzero(np.isnan(ply_arr))
-    # print("the nan_count is", nan_count)
-    # if nan_count > 0:
-    #     print(f"WARNING: {nan_count} NaN values detected in the input polygon.")
 
     minx, miny, maxx, maxy = ply['geometry'].total_bounds
-    # Add print statements to check the values of minx, maxx, miny, and maxy
-    # print(f"minx: {minx}, maxx: {maxx}, miny: {miny}, maxy: {maxy}")
-    # print("ply is a: ", ply)
 
 
     if res:
-        # print("Using resolution")
         dst_transform = (res, 0.0, minx, 0.0, -res, maxy)
         ncol = int((maxx - minx) / res)
         nrow = int((maxy - miny) / res)
@@ -163,7 +150,7 @@ def rasterize_mask_labels(labels, mask, dst_meta=None, res=None,
                 else:
                     for j in range(len(prim_crop)):
                         if labels.loc[i].prim_crop == prim_crop[j]:
-                            geom.append([temp_geom.geometry[0], 3])
+                            geom.append([temp_geom.geometry[0], j + 1])
     else:
         assert ValueError, "binary_mask must be a boolean"
             
@@ -180,7 +167,7 @@ def rasterize_mask_labels(labels, mask, dst_meta=None, res=None,
     with rasterio.open(outpath, 'w+', **dst_meta) as dst:
         out_arr = dst.read(1)
         burned = features.rasterize(
-            geom, out=out_arr, fill=0, transform=dst.transform,
+            geom, out=out_arr, fill=1, transform=dst.transform,
             all_touched = True, default_value=1
         )
         dst.write_band(1, burned)
@@ -307,6 +294,7 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
 
     # Get the index of all the non-zero elements in the mask.
     x = np.argwhere(mask)
+    # print(x)
 
     # First col of x shows the row indices (height) of the mask layer (iterate over
     # the y axis or latitude).
@@ -329,11 +317,14 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
                             col - half_size: col + half_size]
             label_ref = label[row - half_size: row + half_size,
                               col - half_size: col + half_size]
-            # plt.imshow(mask_ref)
             if (usage == "train") and mask_ref.all():
-                print("Passed mask_ref check...")
+                # print("Passed mask_ref check...")
+                # print(label_ref.any())
+                # temp_val, temp_cnt = np.unique(label_ref, return_counts=True)
+                # print(f"Unique values: {temp_val}, Counts: {temp_cnt}")
+                # if 3 in label_ref:
                 if label_ref.any() != 0:
-                    print("Passed label_ref check...")
+                    # print("Passed label_ref check...")
                     if binary_mask:
                         pond_ratio = np.sum(label_ref == 1) / label_ref.size
                     else:
@@ -348,7 +339,7 @@ def patch_center_index(cropping_ref, patch_size, overlap, usage, binary_mask=Tru
 
                         proportional_patch_index.append([row, col])
                 else:
-                    print("failed label_ref check...")
+                    # print("failed label_ref check...")
                     neg_patch_index.append([row, col])
                 
             if (usage == "validate") and (label_ref.any() != 0) and mask_ref.all():
